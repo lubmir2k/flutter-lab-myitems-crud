@@ -3,25 +3,26 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'database_helper.dart';
 import 'item.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final dbHelper = DatabaseHelper();
   await dbHelper.initDatabase(); // Initialize the database
   runApp(MyApp());
 }
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter CRUD IndexedDB',
-      home: ItemListScreen(),
-    );
+    return MaterialApp(title: 'Flutter CRUD IndexedDB', home: ItemListScreen());
   }
 }
+
 class ItemListScreen extends StatefulWidget {
   @override
   _ItemListScreenState createState() => _ItemListScreenState();
 }
+
 class _ItemListScreenState extends State<ItemListScreen> {
   List<Item> _items = [];
   final DatabaseHelper _databaseHelper = DatabaseHelper();
@@ -31,6 +32,7 @@ class _ItemListScreenState extends State<ItemListScreen> {
       _items = _databaseHelper.getItems();
     });
   }
+
   void _addItem() async {
     if (_controller.text.isNotEmpty) {
       await _databaseHelper.insertItem(_controller.text);
@@ -38,11 +40,13 @@ class _ItemListScreenState extends State<ItemListScreen> {
       _fetchItems();
     }
   }
-  void _updateItem(int index) async {
+
+  void _updateItem(Item item) async {
     // Create a text controller for the dialog
-    TextEditingController updateController = TextEditingController(text: _items[index].name);
-    // Show dialog for updating item
-    showDialog(
+    final updateController = TextEditingController(text: item.name);
+
+    // Show dialog for updating item and wait for it to close
+    await showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
@@ -53,12 +57,14 @@ class _ItemListScreenState extends State<ItemListScreen> {
           ),
           actions: [
             TextButton(
-              onPressed: () {
-                String newName = updateController.text;
+              onPressed: () async {
+                final newName = updateController.text;
                 if (newName.isNotEmpty) {
-                  _databaseHelper.updateItem(index, newName);
+                  await _databaseHelper.updateItem(item, newName);
                   _fetchItems();
-                  Navigator.of(context).pop(); // Close the dialog
+                  if (context.mounted) {
+                    Navigator.of(context).pop(); // Close the dialog
+                  }
                 }
               },
               child: Text('Update'),
@@ -71,16 +77,28 @@ class _ItemListScreenState extends State<ItemListScreen> {
         );
       },
     );
+
+    // Dispose the controller after the dialog is closed to prevent memory leaks
+    updateController.dispose();
   }
-  void _deleteItem(int index) async {
-    await _databaseHelper.deleteItem(index);
+
+  void _deleteItem(Item item) async {
+    await _databaseHelper.deleteItem(item);
     _fetchItems();
   }
+
   @override
   void initState() {
     super.initState();
     _fetchItems();
   }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,11 +125,12 @@ class _ItemListScreenState extends State<ItemListScreen> {
                     children: [
                       IconButton(
                         icon: Icon(Icons.edit),
-                        onPressed: () => _updateItem(index), // Call update function
+                        onPressed: () =>
+                            _updateItem(item), // Call update function
                       ),
                       IconButton(
                         icon: Icon(Icons.delete),
-                        onPressed: () => _deleteItem(index),
+                        onPressed: () => _deleteItem(item),
                       ),
                     ],
                   ),

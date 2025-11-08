@@ -16,9 +16,7 @@ class ItemAdapter extends TypeAdapter<Item> {
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Item(
-      fields[0] as String,
-    );
+    return Item(fields[0] as String);
   }
 
   @override

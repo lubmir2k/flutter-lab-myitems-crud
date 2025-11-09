@@ -59,8 +59,8 @@ class _ItemListScreenState extends State<ItemListScreen> {
                 final newName = updateController.text;
                 if (newName.isNotEmpty) {
                   await _databaseHelper.updateItem(item, newName);
-                  _fetchItems();
                   if (context.mounted) {
+                    _fetchItems();
                     Navigator.of(context).pop(); // Close the dialog
                   }
                 }
@@ -82,7 +82,9 @@ class _ItemListScreenState extends State<ItemListScreen> {
 
   void _deleteItem(Item item) async {
     await _databaseHelper.deleteItem(item);
-    _fetchItems();
+    if (mounted) {
+      _fetchItems();
+    }
   }
 
   @override

@@ -92,14 +92,27 @@ Manages all CRUD operations:
 
 ## Data Storage
 
-| Platform | Storage Location |
-|----------|-----------------|
-| **macOS** | `~/Library/Containers/com.example.myitemsCrud/Data/` |
-| **Web** | Browser IndexedDB |
-| **iOS** | App sandbox `/Documents/` |
-| **Android** | App data directory |
+| Platform | Storage Location | Persistence Status |
+|----------|-----------------|-------------------|
+| **macOS** | `~/Library/Containers/com.example.myitemsCrud/Data/` | ✅ Works reliably |
+| **iOS** | App sandbox `/Documents/` | ✅ Works reliably |
+| **Android** | App data directory | ✅ Works reliably |
+| **Web** | Browser IndexedDB | ⚠️ Known issues (see below) |
 
 **Note:** Data is stored **locally** on each device. Items do not sync across platforms.
+
+### Web Persistence Known Issues
+
+Hive has known reliability issues with IndexedDB persistence on web platforms. Items may not persist across browser sessions even in development mode. This is a known limitation of the Hive package on web.
+
+**For development testing:**
+- Use a fixed port: `flutter run -d chrome --web-port 8080 --web-hostname localhost`
+- However, persistence may still be unreliable
+
+**For production web apps:**
+- Consider using `shared_preferences` for web
+- Or use `idb_shim` package instead of Hive
+- Or implement platform-specific storage (Hive for mobile/desktop, alternative for web)
 
 ## Future Enhancements
 

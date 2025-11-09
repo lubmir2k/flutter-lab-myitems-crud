@@ -1,5 +1,4 @@
-import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart'; // Import hive_flutter
+import 'package:hive_flutter/hive_flutter.dart';
 import 'item.dart';
 
 class DatabaseHelper {
@@ -14,7 +13,8 @@ class DatabaseHelper {
 
   Future<void> insertItem(String name) async {
     final box = Hive.box<Item>(boxName);
-    await box.add(Item(name));
+    final item = Item(name);
+    await box.add(item);
   }
 
   List<Item> getItems() {

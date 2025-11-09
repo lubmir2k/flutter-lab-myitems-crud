@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       title: 'Flutter CRUD IndexedDB',
-      home: ItemListScreen(),
+      home: const ItemListScreen(),
     );
   }
 }

@@ -6,19 +6,26 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final dbHelper = DatabaseHelper();
   await dbHelper.initDatabase(); // Initialize the database
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(title: 'Flutter CRUD IndexedDB', home: ItemListScreen());
+    return const MaterialApp(
+      title: 'Flutter CRUD IndexedDB',
+      home: ItemListScreen(),
+    );
   }
 }
 
 class ItemListScreen extends StatefulWidget {
+  const ItemListScreen({super.key});
+
   @override
-  _ItemListScreenState createState() => _ItemListScreenState();
+  State<ItemListScreen> createState() => _ItemListScreenState();
 }
 
 class _ItemListScreenState extends State<ItemListScreen> {
